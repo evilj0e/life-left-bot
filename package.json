@@ -1,0 +1,21 @@
+{
+  "name": "life-left-bot",
+  "version": "1.0.0",
+  "description": "telegram bot for the life time countdown",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node --loader ts-node/esm --no-warnings=ExperimentalWarning src/index.ts"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "date-fns": "^4.1.0",
+    "dotenv": "^16.4.5",
+    "telegraf": "^4.16.3"
+  },
+  "devDependencies": {
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.2"
+  }
+}
