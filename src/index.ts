@@ -109,7 +109,7 @@ You have ${Format.underline`${leftDays} days left`} to live.
       await ctx.reply(
         `By the way, don’t forget to subscribe to the bot author’s channel — @antonkonevcom.
         
-We're not fishing to extend your life, but we'll help you not to spend it on the useful things.
+We're not fishing to extend your life, but we'll help you not to spend it on the useless things.
 
 🏴`
       );
