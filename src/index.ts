@@ -1,8 +1,7 @@
 import "dotenv/config";
+import express from "express";
 import { Scenes, session, Telegraf, Format } from "telegraf";
 import { parse, isValid, differenceInDays } from "date-fns";
-
-import { fmt, bold, italic, underline } from "telegraf/format";
 
 import { Context } from "./types.js";
 import { WIZARD_ID } from "./constants.js";
@@ -119,3 +118,18 @@ const stage = new Scenes.Stage<Context>([wizard], {
 bot.use(session());
 bot.use(stage.middleware());
 bot.launch();
+
+const app = express();
+app.use(
+  await bot.createWebhook({
+    domain: process.env.HOST || "",
+  })
+);
+
+app.get("/health", (_, res) => {
+  res.send({ status: "ok" });
+});
+
+app.listen(process.env.PORT, () =>
+  console.log("Listening on port", process.env.PORT)
+);
