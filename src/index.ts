@@ -1,6 +1,6 @@
 import "dotenv/config";
 import express from "express";
-import { Scenes, session, Telegraf, Format } from "telegraf";
+import { Scenes, session, Telegraf, Format, Markup } from "telegraf";
 import { parse, isValid, differenceInDays } from "date-fns";
 
 import { Context } from "./types.js";
@@ -52,49 +52,66 @@ const wizard = new Scenes.WizardScene<Context>(
       return;
     }
 
-    await ctx.reply(Format.fmt`Country (${Format.italic`United Kingdom`})`);
+    await ctx.reply(
+      Format.fmt`Country (${Format.italic`United Kingdom`})`,
+      Markup.inlineKeyboard([Markup.button.callback("Skip", "skip")])
+    );
     return ctx.wizard.next();
   },
 
   async (ctx) => {
-    if (ctx.message && "text" in ctx.message) {
-      const input = ctx.message.text.toLowerCase();
+    const hasAnswer = ctx.message && "text" in ctx.message;
+    const hasSkip = ctx.callbackQuery && "data" in ctx.callbackQuery;
+
+    if (hasAnswer || hasSkip) {
+      const input =
+        hasAnswer && ctx.message.text
+          ? ctx.message.text.toLowerCase()
+          : "world";
+
       const item =
-        ctx.message.text &&
-        data.find((record) => record.country.toLowerCase() === input);
+        input && data.find((record) => record.country.toLowerCase() === input);
 
       if (!item) {
         await ctx.reply("Please enter the country for real");
         return;
       }
 
-      ctx.scene.session.country = ctx.message.text;
+      ctx.scene.session.country = input;
 
       const daysLived = differenceInDays(
         new Date(),
         ctx.scene.session.dateOfBirth
       );
       const totalDays = Math.round(365 * item[ctx.scene.session.sex]);
-      const percentage = ((daysLived / totalDays) * 100).toFixed(2);
+      const percentage = (daysLived / totalDays) * 100;
       const leftDays = totalDays - daysLived;
 
+      const CHART_LENGTH = 380;
+      const chartFilled = Math.floor((CHART_LENGTH * percentage) / 100);
+
       await ctx.reply(
-        Format.fmt`You have already lived ${Format.underline`${daysLived} days`}, which makes up ${percentage}% of your entire life.
+        Format.fmt`${Array(chartFilled).fill("■").join("")}${Array(
+          CHART_LENGTH - chartFilled
+        )
+          .fill("□")
+          .join("")}
+        
+You have already lived ${daysLived} days, which makes up ${percentage.toFixed(
+          2
+        )}% of your entire life.
 
 You have ${Format.underline`${leftDays} days left`} to live.
 
-(Based on data on ${Format.link(
-          "the average life expectancy",
-          "https://en.wikipedia.org/wiki/List_of_countries_by_life_expectancy"
-        )} in ${item.country})`
+(Based on data on the average life expectancy by UN)`
       );
 
       await ctx.reply(
         `By the way, don’t forget to subscribe to the bot author’s channel — @antonkonevcom.
         
-We can’t promise to extend your life, but it will be interesting!
-        
-🖤`
+We're not fishing to extend your life, but we'll help you not to spend it on the useful things.
+
+🏴`
       );
     } else {
       await ctx.reply("Please enter the country for real");

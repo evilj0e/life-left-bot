@@ -1,4 +1,5 @@
 export const data = [
+  { country: "World", male: 70.55, female: 75.89 },
   { country: "Hong Kong", male: 82.84, female: 88.13 },
   { country: "Japan", male: 81.69, female: 87.74 },
   { country: "South Korea", male: 81.19, female: 87.16 },
