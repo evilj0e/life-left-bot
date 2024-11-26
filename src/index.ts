@@ -159,14 +159,14 @@ const stage = new Scenes.Stage<Context>([wizard], {
 });
 bot.use(session());
 bot.use(stage.middleware());
-// bot.launch();
+bot.launch();
 
 const app = express();
-app.use(
-  await bot.createWebhook({
-    domain: process.env.HOST || "",
-  })
-);
+// app.use(
+//   await bot.createWebhook({
+//     domain: process.env.HOST || "",
+//   })
+// );
 
 app.get("/health", (_, res) => {
   res.send({ status: "ok" });
