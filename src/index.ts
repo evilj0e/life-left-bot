@@ -159,7 +159,7 @@ const stage = new Scenes.Stage<Context>([wizard], {
 });
 bot.use(session());
 bot.use(stage.middleware());
-bot.launch();
+// bot.launch();
 
 const app = express();
 app.use(
