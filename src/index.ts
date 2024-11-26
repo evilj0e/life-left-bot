@@ -55,15 +55,24 @@ const wizard = new Scenes.WizardScene<Context>(
   },
 
   async (ctx) => {
-    if (ctx.callbackQuery && "data" in ctx.callbackQuery) {
-      if (!["male", "female"].includes(ctx.callbackQuery.data)) {
+    const hasAnswer = ctx.message && "text" in ctx.message;
+    const hasQuery = ctx.callbackQuery && "data" in ctx.callbackQuery;
+
+    if (hasAnswer || hasQuery) {
+      const answer = hasQuery
+        ? ctx.callbackQuery.data
+        : hasAnswer
+        ? ctx.message.text
+        : "";
+
+      if (!["male", "female"].includes(answer)) {
         await ctx.reply(
           "Для продолжения нам нужнен пол – он влияет на продолжительность жизни. Эти данные нигде не сохраняются."
         );
         return;
       }
 
-      ctx.scene.session.sex = ctx.callbackQuery.data as "male";
+      ctx.scene.session.sex = answer as "male";
     } else {
       await ctx.reply(
         "Для продолжения нам нужнен пол – он влияет на продолжительность жизни. Эти данные нигде не сохраняются."
