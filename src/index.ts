@@ -11,7 +11,7 @@ const wizard = new Scenes.WizardScene<Context>(
   WIZARD_ID,
   async (ctx) => {
     await ctx.sendMessage(
-      Format.fmt`Date of birth (${Format.italic`dd/mm/yyyy`})`
+      Format.fmt`Дата рождения (${Format.italic`например, 23.11.1990`})`
     );
 
     return ctx.wizard.next();
@@ -19,20 +19,35 @@ const wizard = new Scenes.WizardScene<Context>(
 
   async (ctx) => {
     if (ctx.message && "text" in ctx.message) {
-      const parsedDate = parse(ctx.message.text, "dd/MM/yyyy", new Date());
+      const parsedDate = parse(ctx.message.text, "dd.MM.yyyy", new Date());
       const isParsedDateValid = isValid(parsedDate);
-      const isTooOld = differenceInDays(new Date(), parsedDate) > 365 * 125;
+      const isTooOld = differenceInDays(new Date(), parsedDate) > 365 * 122;
 
-      if (!isParsedDateValid || isTooOld) {
-        await ctx.reply("Please enter the date for real");
+      if (isTooOld) {
+        await ctx.reply(
+          "Ух ты! Вы превзошли Жанну Кальман, самого долгоживущего человека в мире! Переключаем вас на “Книгу рекордов Гиннесса”."
+        );
+        return;
+      }
+
+      if (!isParsedDateValid) {
+        await ctx.reply("Для продолжения нам нужна дата в формате дд.мм.гггг");
         return;
       }
 
       ctx.scene.session.dateOfBirth = parsedDate;
 
-      await ctx.reply(Format.fmt`Sex (${Format.italic`Female or Male`})`);
+      await ctx.reply(
+        Format.fmt`Пол`,
+        Markup.inlineKeyboard([
+          Markup.button.callback("🕺", "male"),
+          Markup.button.callback("💃", "female"),
+        ])
+      );
     } else {
-      await ctx.reply("Please enter the date for real");
+      await ctx.reply(
+        "Для продолжения нам нужна дата в формате дд.мм.гггг – будет использоваться для подсчёта дней. Эти данные нигде не сохраняются."
+      );
       return;
     }
 
@@ -40,21 +55,25 @@ const wizard = new Scenes.WizardScene<Context>(
   },
 
   async (ctx) => {
-    if (ctx.message && "text" in ctx.message) {
-      if (!["female", "male"].includes(ctx.message.text.toLowerCase())) {
-        await ctx.reply("Please enter the sex for real");
+    if (ctx.callbackQuery && "data" in ctx.callbackQuery) {
+      if (!["male", "female"].includes(ctx.callbackQuery.data)) {
+        await ctx.reply(
+          "Для продолжения нам нужнен пол – он влияет на продолжительность жизни. Эти данные нигде не сохраняются."
+        );
         return;
       }
 
-      ctx.scene.session.sex = ctx.message.text.toLowerCase() as "male";
+      ctx.scene.session.sex = ctx.callbackQuery.data as "male";
     } else {
-      await ctx.reply("Please enter the sex for real");
+      await ctx.reply(
+        "Для продолжения нам нужнен пол – он влияет на продолжительность жизни. Эти данные нигде не сохраняются."
+      );
       return;
     }
 
     await ctx.reply(
-      Format.fmt`Country (${Format.italic`United Kingdom`})`,
-      Markup.inlineKeyboard([Markup.button.callback("Skip", "skip")])
+      Format.fmt`Страна (${Format.italic`например, Россия`})`,
+      Markup.inlineKeyboard([Markup.button.callback("Пропустить", "skip")])
     );
     return ctx.wizard.next();
   },
@@ -73,7 +92,9 @@ const wizard = new Scenes.WizardScene<Context>(
         input && data.find((record) => record.country.toLowerCase() === input);
 
       if (!item) {
-        await ctx.reply("Please enter the country for real");
+        await ctx.reply(
+          "Для продолжения нам нужна страна – оно влияет на продолжительность жизни. Эти данные нигде не сохраняются."
+        );
         return;
       }
 
@@ -97,24 +118,28 @@ const wizard = new Scenes.WizardScene<Context>(
           .fill("□")
           .join("")}
         
-You have already lived ${daysLived} days, which makes up ${percentage.toFixed(
-          2
-        )}% of your entire life.
+Вы уже прожили ${daysLived} ${
+          daysLived === 1 ? "день" : "дней"
+        }, что составляет ${percentage.toFixed(2)}% от всей вашей жизни.
 
-You have ${Format.underline`${leftDays} days left`} to live.
+Вам осталось жить ${Format.underline`${leftDays} ${
+          leftDays === 1 ? "день" : "дней"
+        }`}.
 
-(Based on data on the average life expectancy by UN)`
+(На основе данных о средней продолжительности жизни по данным ООН)`
       );
 
       await ctx.reply(
-        `By the way, don’t forget to subscribe to the bot author’s channel — @antonkonevcom.
-        
-We're not fishing to extend your life, but we'll help you not to spend it on the useless things.
+        `Кстати, не забудьте подписаться на канал автора — @antonkonevcom.
+
+Я не обещаю продлить вашу жизнь, но помогу не тратить её на бесполезные вещи.
 
 🏴`
       );
     } else {
-      await ctx.reply("Please enter the country for real");
+      await ctx.reply(
+        "Для продолжения нам нужна страна – оно влияет на продолжительность жизни. Эти данные нигде не сохраняются."
+      );
       return;
     }
 
