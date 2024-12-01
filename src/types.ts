@@ -2,7 +2,7 @@ import { Scenes } from "telegraf";
 
 interface SessionStorage extends Scenes.WizardSessionData {
   dateOfBirth: Date;
-  sex: 'male' | 'female';
+  sex: "male" | "female";
   country: string;
 }
 
