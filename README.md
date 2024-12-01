@@ -1,6 +1,6 @@
 # Life Left Bot
 
-Life Left Bot is a simple Telegram bot built using Telegraf.js that calculates the remaining life expectancy based on UN statistics.
+[Life Left Bot](https://t.me/LifeLeftBot) is a simple Telegram bot built using Telegraf.js that calculates the remaining life expectancy based on UN statistics.
 
 ## Installation
 
@@ -17,7 +17,7 @@ cd life-left-bot
 npm install
 ```
 
-3. Copy `.env.sample` to a `.env` file in the root directory and provide values. Get the telegram bot token with https://t.me/BotFather
+3. Copy `.env.sample` to a `.env` file in the root directory and provide values. Get the telegram bot token with [@BotFather](https://t.me/BotFather)
 
 ## Usage
 
