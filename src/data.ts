@@ -1,3 +1,5 @@
+export const DEFAULT_REGION = "Мир"
+
 export const data = [
   { country: "Мир", male: 70.55, female: 75.89 },
   { country: "Гонконг", male: 82.84, female: 88.13 },

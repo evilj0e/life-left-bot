@@ -5,7 +5,7 @@ import { parse, isValid, differenceInDays } from "date-fns";
 
 import { Context } from "./types.js";
 import { WIZARD_ID } from "./constants.js";
-import { data } from "./data.js";
+import { data, DEFAULT_REGION } from "./data.js";
 import { messages } from "./messages.js";
 
 const wizard = new Scenes.WizardScene<Context>(
@@ -72,18 +72,22 @@ const wizard = new Scenes.WizardScene<Context>(
 
     await ctx.reply(
       messages.country.question,
-      Markup.inlineKeyboard([Markup.button.callback("Пропустить", "skip")])
+      Markup.inlineKeyboard([Markup.button.callback(messages.skip, "skip")])
     );
     return ctx.wizard.next();
   },
 
   async (ctx) => {
-    const hasAnswer = ctx.message && "text" in ctx.message;
-    const hasSkip = ctx.callbackQuery && "data" in ctx.callbackQuery;
+    const hasAnswer = ctx.message && "text" in ctx.message && ctx.message.text;
+    const hasSkip =
+      ctx.callbackQuery &&
+      "data" in ctx.callbackQuery &&
+      ctx.callbackQuery.data;
 
     if (hasAnswer || hasSkip) {
-      const input =
-        hasAnswer && ctx.message.text ? ctx.message.text.toLowerCase() : "Мир";
+      const input = (
+        hasAnswer ? ctx.message.text : DEFAULT_REGION
+      ).toLowerCase();
 
       const item =
         input && data.find((record) => record.country.toLowerCase() === input);
