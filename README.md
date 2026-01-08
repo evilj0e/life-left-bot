@@ -1,40 +1,60 @@
 # Life Left Bot
 
-[Life Left Bot](https://t.me/LifeLeftBot) is a simple Telegram bot built using Telegraf.js that calculates the remaining life expectancy based on UN statistics.
+[Life Left Bot](https://t.me/LifeLeftBot) — Telegram bot that calculates your remaining life expectancy based on UN data.
 
-## Installation
+## Requirements
 
-1. Clone the repository:
+- Go 1.21+
+- Telegram Bot Token (from [@BotFather](https://t.me/BotFather))
 
-```sh
-git clone https://github.com/evilj0e/life-left-bot.git
-cd life-left-bot
+## Setup
+
+1. Clone the repository
+2. Copy `.env.example` to `.env` and set your `TELEGRAM_BOT_TOKEN`
+3. Run:
+
+```bash
+go mod tidy
+go run .
 ```
 
-2. Install dependencies:
+## Environment Variables
 
-```sh
-npm install
+| Variable             | Description                              | Required |
+| -------------------- | ---------------------------------------- | -------- |
+| `TELEGRAM_BOT_TOKEN` | Telegram bot token from BotFather        | Yes      |
+| `PORT`               | Health check server port (default: 8080) | No       |
+
+## Building
+
+```bash
+go build -o life-left-bot .
 ```
 
-3. Copy `.env.sample` to a `.env` file in the root directory and provide values. Get the telegram bot token with [@BotFather](https://t.me/BotFather)
+## Docker
 
-## Usage
+```dockerfile
+FROM golang:1.21-alpine AS builder
+WORKDIR /app
+COPY go.mod go.sum ./
+RUN go mod download
+COPY . .
+RUN go build -o life-left-bot .
 
-1. Start the bot:
-
-```sh
-npm start
+FROM alpine:latest
+WORKDIR /app
+COPY --from=builder /app/life-left-bot .
+CMD ["./life-left-bot"]
 ```
 
-2. Open Telegram and search for your bot.
+## Features
 
-3. Start a conversation with the bot and follow the instructions to calculate your remaining life expectancy.
+- Asks for date of birth
+- Asks for sex (affects life expectancy)
+- Asks for country (optional, defaults to world average)
+- Shows visual progress bar of life lived
+- Displays days lived and days remaining
 
-## Contributing
-
-Contributions are welcome! Please open an issue or submit a pull request.
-
-## License
+## Data Source
 
 This project is licensed under the MIT License.
