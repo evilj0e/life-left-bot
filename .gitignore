@@ -1,2 +1,16 @@
-node_modules
+# Environment
 .env
+.env.local
+
+# Go binary
+life-left-bot
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
